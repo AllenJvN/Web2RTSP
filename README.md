@@ -29,7 +29,8 @@ This repository is both a Home Assistant App repository and a standalone Docker 
 2. Add `https://github.com/AllenJvN/Web2RTSP`.
 3. Install and start Web2RTSP.
 4. Open its Web UI through ingress.
-5. Change the default RTSP password, add a stream, and save.
+5. Enter the Home Assistant LAN IP or hostname under **Advertised host/IP**.
+6. Change the default RTSP password, add a stream, and save.
 
 The App exposes TCP 8554 for RTSP and TCP 8888 for HLS. Port 8099 is ingress-only by default. Do not forward these ports to the internet.
 
@@ -57,7 +58,7 @@ Suggested starting values for an NVR dashboard tile:
 
 For an HA dashboard, use the dashboard's full internal URL, choose `Home Assistant token`, enter the HA base URL and a dedicated long-lived access token. Use a dedicated non-administrator HA account where practical.
 
-The NVR URL is:
+Set **Advertised host/IP** to an address the NVR can reach directly. The NVR URL is:
 
 ```text
 rtsp://HOST:8554/STREAM_NAME
@@ -83,7 +84,7 @@ Enter the configured viewer username and password in the NVR's separate credenti
 - The management API relies on HA ingress authentication when installed as an App. A standalone deployment must remain on a trusted LAN or be placed behind an authenticating reverse proxy.
 - RTSP is authenticated but unencrypted. Keep it on a trusted LAN/VLAN. MediaMTX accepts publishers only through an internal random credential restricted to loopback.
 - Chromium runs without its setuid sandbox because of container constraints. The App remains Supervisor-protected and does not request host networking, privileged mode, Docker access, or host filesystem mounts.
-- Version 0.1.0 has `apparmor: false` pending a tested Chromium-compatible profile. This must be revisited before a stable release.
+- This pre-release has `apparmor: false` pending a tested Chromium-compatible profile. This must be revisited before a stable release.
 
 See [SECURITY.md](SECURITY.md) for reporting and deployment guidance.
 

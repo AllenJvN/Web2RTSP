@@ -12,6 +12,7 @@ def sample_config():
         "rtsp": {
             "port": 8554,
             "hls_port": 8888,
+            "advertise_host": "192.168.1.156",
             "username": "viewer",
             "password": "correct-horse",
             "publisher_password": "internal-secret",
@@ -77,6 +78,21 @@ def test_rejects_non_http_url(tmp_path):
     config = sample_config()
     config["streams"][0]["url"] = "file:///etc/passwd"
     with pytest.raises(ValueError, match="HTTP"):
+        save_config(tmp_path / "config.json", config)
+
+
+def test_old_config_defaults_advertised_host(tmp_path):
+    config = sample_config()
+    del config["rtsp"]["advertise_host"]
+    saved = save_config(tmp_path / "config.json", config)
+    assert saved["rtsp"]["advertise_host"] == ""
+
+
+@pytest.mark.parametrize("value", ["https://homeassistant.local", "bad host", "host/path"])
+def test_rejects_invalid_advertised_host(tmp_path, value):
+    config = sample_config()
+    config["rtsp"]["advertise_host"] = value
+    with pytest.raises(ValueError, match="advertise_host"):
         save_config(tmp_path / "config.json", config)
 
 

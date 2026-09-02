@@ -1,5 +1,5 @@
 name: Web2RTSP
-version: "0.1.0"
+version: "0.1.1"
 slug: web2rtsp
 description: Stream a Home Assistant dashboard or any webpage as an RTSP virtual camera.
 url: https://github.com/AllenJvN/Web2RTSP

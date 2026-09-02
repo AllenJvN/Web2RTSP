@@ -16,21 +16,30 @@ from .runtime import RuntimeManager
 
 LOGGER = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent
-LOG_LEVELS = {"CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"}
+LOG_LEVEL_ALIASES = {
+    "TRACE": "DEBUG",
+    "DEBUG": "DEBUG",
+    "INFO": "INFO",
+    "NOTICE": "INFO",
+    "WARNING": "WARNING",
+    "ERROR": "ERROR",
+    "FATAL": "CRITICAL",
+    "CRITICAL": "CRITICAL",
+}
 
 
 def configured_log_level(options_path: Path | None = None) -> str:
     """Read the HA App log option, with an environment override for Docker."""
     environment = os.getenv("LOG_LEVEL", "").upper()
-    if environment in LOG_LEVELS:
-        return environment
+    if environment in LOG_LEVEL_ALIASES:
+        return LOG_LEVEL_ALIASES[environment]
     path = options_path or Path(os.getenv("OPTIONS_PATH", "/data/options.json"))
     try:
         configured = str(json.loads(path.read_text(encoding="utf-8")).get("log_level", "INFO"))
     except (OSError, ValueError, TypeError):
         configured = "INFO"
     configured = configured.upper()
-    return configured if configured in LOG_LEVELS else "INFO"
+    return LOG_LEVEL_ALIASES.get(configured, "INFO")
 
 
 def _host(request: web.Request) -> str:
@@ -45,6 +54,12 @@ def _host(request: web.Request) -> str:
         return socket.gethostbyname(socket.gethostname())
     except OSError:
         return "homeassistant.local"
+
+
+def _advertised_host(request: web.Request) -> str:
+    configured = request.app["config"]["rtsp"].get("advertise_host", "").strip()
+    host = configured or _host(request)
+    return f"[{host}]" if ":" in host and not host.startswith("[") else host
 
 
 async def index(request: web.Request) -> web.FileResponse:
@@ -71,7 +86,7 @@ async def api_save_config(request: web.Request) -> web.Response:
 
 
 async def api_status(request: web.Request) -> web.Response:
-    return web.json_response(request.app["manager"].status(_host(request)))
+    return web.json_response(request.app["manager"].status(_advertised_host(request)))
 
 
 async def api_restart(request: web.Request) -> web.Response:
@@ -95,7 +110,7 @@ async def api_snapshot(request: web.Request) -> web.Response:
 
 
 async def health(request: web.Request) -> web.Response:
-    status = request.app["manager"].status(_host(request))
+    status = request.app["manager"].status(_advertised_host(request))
     media_ok = status["mediamtx"]["running"]
     failed = [s for s in status["streams"] if s["state"] == "error"]
     return web.json_response(

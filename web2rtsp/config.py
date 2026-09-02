@@ -22,6 +22,7 @@ def default_config() -> dict:
         "rtsp": {
             "port": 8554,
             "hls_port": 8888,
+            "advertise_host": "",
             "username": "viewer",
             "password": "change-me",
             "publisher_password": secrets.token_urlsafe(24),
@@ -64,6 +65,7 @@ def validate_config(raw: dict) -> dict:
     rtsp = cfg.setdefault("rtsp", {})
     rtsp.setdefault("port", 8554)
     rtsp.setdefault("hls_port", 8888)
+    rtsp.setdefault("advertise_host", "")
     rtsp.setdefault("username", "viewer")
     rtsp.setdefault("password", "change-me")
     rtsp.setdefault("publisher_password", secrets.token_urlsafe(24))
@@ -74,6 +76,13 @@ def validate_config(raw: dict) -> dict:
         rtsp[key] = value
     if rtsp["port"] == rtsp["hls_port"]:
         raise ValueError("RTSP and HLS ports must differ")
+    advertise_host = str(rtsp["advertise_host"]).strip()
+    if advertise_host and (
+        len(advertise_host) > 253
+        or not re.fullmatch(r"[A-Za-z0-9_.:-]+", advertise_host)
+    ):
+        raise ValueError("rtsp.advertise_host must be a hostname or IP address")
+    rtsp["advertise_host"] = advertise_host
     if not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", str(rtsp["username"])):
         raise ValueError("RTSP username contains unsupported characters")
     if not 1 <= len(str(rtsp["password"])) <= 128:
