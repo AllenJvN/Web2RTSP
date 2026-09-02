@@ -1,0 +1,24 @@
+services:
+  web2rtsp:
+    build: .
+    image: ghcr.io/allenjvn/web2rtsp:local
+    container_name: web2rtsp
+    restart: unless-stopped
+    shm_size: 512mb
+    ports:
+      - "8099:8099"
+      - "8554:8554/tcp"
+      - "8888:8888/tcp"
+    volumes:
+      - web2rtsp_data:/data
+    environment:
+      TZ: Africa/Johannesburg
+      LOG_LEVEL: INFO
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  web2rtsp_data:

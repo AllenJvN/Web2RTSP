@@ -1,0 +1,31 @@
+name: Web2RTSP
+version: "0.1.0"
+slug: web2rtsp
+description: Stream a Home Assistant dashboard or any webpage as an RTSP virtual camera.
+url: https://github.com/AllenJvN/Web2RTSP
+arch:
+  - amd64
+  - aarch64
+stage: experimental
+startup: application
+boot: auto
+init: false
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:cast-variant
+panel_title: Web2RTSP
+homeassistant_api: true
+apparmor: false
+ports:
+  8099/tcp: null
+  8554/tcp: 8554
+  8888/tcp: 8888
+ports_description:
+  8099/tcp: Optional direct management UI; prefer Home Assistant ingress
+  8554/tcp: RTSP virtual-camera streams
+  8888/tcp: HLS stream preview
+options:
+  log_level: info
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)
+watchdog: http://[HOST]:[PORT:8099]/health

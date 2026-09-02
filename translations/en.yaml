@@ -1,0 +1,8 @@
+configuration:
+  log_level:
+    name: Log level
+    description: Controls the verbosity of Web2RTSP application logs.
+network:
+  8099/tcp: Optional direct management UI; prefer Home Assistant ingress
+  8554/tcp: RTSP virtual-camera streams
+  8888/tcp: HLS stream diagnostics
