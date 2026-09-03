@@ -24,6 +24,6 @@ def test_mediamtx_ports_come_from_config():
     assert result["hlsAddress"] == ":9888"
 
 
-def test_encoder_defaults_match_the_verified_720p_profile():
-    assert X264_PRESET == "superfast"
-    assert X264_THREADS == "1"
+def test_encoder_defaults_match_the_verified_nvr_profile():
+    assert X264_PRESET == "veryfast"
+    assert X264_THREADS == "0"

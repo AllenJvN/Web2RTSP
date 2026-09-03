@@ -19,11 +19,10 @@ from .auth import apply_auth
 
 LOGGER = logging.getLogger(__name__)
 
-# The supported NVR workload is deliberately biased toward low encoder cost.
-# At 1280x720/10 FPS, one superfast x264 worker sustained the target rate under
-# a high-animation stress page while materially reducing CPU and memory use.
-X264_PRESET = "superfast"
-X264_THREADS = "1"
+# Preserve image quality on the physical NVR display. Lower-cost presets and a
+# single encoder thread passed frame-level checks but degraded the Samsung view.
+X264_PRESET = "veryfast"
+X264_THREADS = "0"
 
 
 def utcnow() -> str:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.4 — pre-release
+
+- Restored the x264 `veryfast` preset with automatic threading after physical Samsung/NVR inspection found the lower-cost `0.1.3` settings visibly degraded the dashboard.
+- Prioritized the actual viewing surface over frame-level desktop inspection and the modest CPU reduction.
+
 ## 0.1.3 — pre-release
 
 - Reduced software H.264 encoder cost with the tested x264 `superfast` preset and a single encoder thread.
