@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — pre-release
+
+- Reduced software H.264 encoder cost with the tested x264 `superfast` preset and a single encoder thread.
+- Preserved the existing 1280×720, 10 FPS, H.264 Baseline/yuv420p NVR output contract.
+- Verified the candidate with an animated stress page, independent RTSP decoding, and native-resolution dashboard-card inspection.
+
 ## 0.1.2 — pre-release
 
 - Added container-local diagnostics for Chromium, FFmpeg, Xvfb, MediaMTX, and the app/Playwright process tree.

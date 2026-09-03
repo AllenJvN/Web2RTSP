@@ -1,4 +1,4 @@
-from web2rtsp.runtime import mediamtx_config
+from web2rtsp.runtime import X264_PRESET, X264_THREADS, mediamtx_config
 
 from .test_config import sample_config
 
@@ -22,3 +22,8 @@ def test_mediamtx_ports_come_from_config():
     result = mediamtx_config(config)
     assert result["rtspAddress"] == ":9554"
     assert result["hlsAddress"] == ":9888"
+
+
+def test_encoder_defaults_match_the_verified_720p_profile():
+    assert X264_PRESET == "superfast"
+    assert X264_THREADS == "1"

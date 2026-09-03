@@ -19,6 +19,12 @@ from .auth import apply_auth
 
 LOGGER = logging.getLogger(__name__)
 
+# The supported NVR workload is deliberately biased toward low encoder cost.
+# At 1280x720/10 FPS, one superfast x264 worker sustained the target rate under
+# a high-animation stress page while materially reducing CPU and memory use.
+X264_PRESET = "superfast"
+X264_THREADS = "1"
+
 
 def utcnow() -> str:
     return datetime.now(UTC).isoformat()
@@ -246,7 +252,8 @@ class StreamWorker:
             "-thread_queue_size", "512", "-f", "x11grab", "-draw_mouse", "0",
             "-video_size", f"{width}x{height}", "-framerate", str(fps),
             "-i", f"{display_name}+0,0", "-an", "-c:v", "libx264",
-            "-preset", "veryfast", "-tune", "zerolatency", "-pix_fmt", "yuv420p",
+            "-preset", X264_PRESET, "-tune", "zerolatency", "-threads", X264_THREADS,
+            "-pix_fmt", "yuv420p",
             "-profile:v", "baseline", "-level", "3.1", "-bf", "0",
             "-g", str(gop), "-keyint_min", str(gop), "-sc_threshold", "0",
             "-b:v", f"{bitrate}k", "-maxrate", f"{bitrate}k",
