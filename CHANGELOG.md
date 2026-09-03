@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5 — pre-release
+
+- Reintroduced the measured x264 `superfast` preset with one encoder thread after physical Samsung comparison showed the suspected gradient banding was unchanged by the `veryfast` rollback.
+- Added conservative FFmpeg gradient debanding and 8-bit dithering while preserving the NVR-compatible output format.
+- Retained the same H.264 Baseline/yuv420p output contract and configurable resolution, frame rate, and bitrate.
+
 ## 0.1.4 — pre-release
 
 - Restored the x264 `veryfast` preset with automatic threading after physical Samsung/NVR inspection found the lower-cost `0.1.3` settings visibly degraded the dashboard.

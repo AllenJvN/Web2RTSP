@@ -19,10 +19,11 @@ from .auth import apply_auth
 
 LOGGER = logging.getLogger(__name__)
 
-# Preserve image quality on the physical NVR display. Lower-cost presets and a
-# single encoder thread passed frame-level checks but degraded the Samsung view.
-X264_PRESET = "veryfast"
-X264_THREADS = "0"
+# Favor the measured low-cost profile. Physical Samsung reinspection showed
+# the visible gradient banding remained with the original encoder settings.
+X264_PRESET = "superfast"
+X264_THREADS = "1"
+VIDEO_FILTER = "format=yuv420p,gradfun=1.2:16"
 
 
 def utcnow() -> str:
@@ -252,6 +253,7 @@ class StreamWorker:
             "-video_size", f"{width}x{height}", "-framerate", str(fps),
             "-i", f"{display_name}+0,0", "-an", "-c:v", "libx264",
             "-preset", X264_PRESET, "-tune", "zerolatency", "-threads", X264_THREADS,
+            "-vf", VIDEO_FILTER,
             "-pix_fmt", "yuv420p",
             "-profile:v", "baseline", "-level", "3.1", "-bf", "0",
             "-g", str(gop), "-keyint_min", str(gop), "-sc_threshold", "0",

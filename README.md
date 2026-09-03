@@ -13,6 +13,8 @@ This repository is both a Home Assistant App repository and a standalone Docker 
 - Multiple independent webpage streams (up to eight)
 - Home Assistant long-lived-token injection, HTTP-header authentication, or no authentication
 - H.264 Baseline/yuv420p RTSP over TCP for conservative NVR compatibility
+- CPU-tuned single-thread `superfast` x264 encoding
+- Lightweight gradient debanding and dithering for smoother dashboard backgrounds
 - Home Assistant ingress management UI
 - Standalone Docker Compose deployment
 - RTSP viewer authentication

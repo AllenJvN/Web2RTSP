@@ -1,4 +1,4 @@
-from web2rtsp.runtime import X264_PRESET, X264_THREADS, mediamtx_config
+from web2rtsp.runtime import VIDEO_FILTER, X264_PRESET, X264_THREADS, mediamtx_config
 
 from .test_config import sample_config
 
@@ -25,5 +25,6 @@ def test_mediamtx_ports_come_from_config():
 
 
 def test_encoder_defaults_match_the_verified_nvr_profile():
-    assert X264_PRESET == "veryfast"
-    assert X264_THREADS == "0"
+    assert X264_PRESET == "superfast"
+    assert X264_THREADS == "1"
+    assert VIDEO_FILTER == "format=yuv420p,gradfun=1.2:16"

@@ -1,5 +1,5 @@
 ARG BUILD_FROM=docker.io/library/debian:bookworm-slim
-ARG BUILD_VERSION=0.1.4
+ARG BUILD_VERSION=0.1.5
 ARG BUILD_ARCH=amd64
 FROM bluenviron/mediamtx:1.18.2 AS mediamtx
 FROM ${BUILD_FROM}
