@@ -18,6 +18,7 @@ This repository is both a Home Assistant App repository and a standalone Docker 
 - RTSP viewer authentication
 - JPEG live-render preview, status, restart counts, and bounded diagnostic tails
 - Browser and FFmpeg health supervision with automatic restart
+- Per-component resource diagnostics, cached every five seconds, with short history and a redacted JSON download
 - Optional periodic page reload
 - HLS output for convenient browser/VLC checks
 - `amd64` and `aarch64` App metadata
@@ -72,10 +73,54 @@ Enter the configured viewer username and password in the NVR's separate credenti
 |---|---|---|
 | `GET` | `/health` | Container watchdog health |
 | `GET` | `/api/status` | Media server and stream status |
+| `GET` | `/api/diagnostics` | Cached resource samples and five-minute history; `?download=1` downloads JSON |
 | `GET` | `/api/config` | Masked configuration |
 | `PUT` | `/api/config` | Validate, persist, and apply configuration |
 | `POST` | `/api/streams/{name}/restart` | Restart one stream |
 | `GET` | `/api/streams/{name}/snapshot` | Current rendered JPEG |
+
+## Resource diagnostics and Home Assistant sensors
+
+The Web UI's **Resource diagnostics** panel is the source of detailed performance
+information. A background sampler reads Linux `/proc` counters every five seconds
+and groups owned process trees into **Chromium**, **FFmpeg/H.264**, **Xvfb** per
+stream, plus shared **MediaMTX** and **App + Playwright**. API requests read the
+cached result; opening extra clients does not start extra samplers. Memory walks
+run off the app's event loop. No Docker socket, host PID namespace, privileged
+capabilities, additional token, or MQTT broker is required.
+
+- **CPU %:** 100% means one logical CPU. A multithreaded component can exceed
+  100%. Container CPU comes separately from cgroup v2; capacity-used % divides
+  by the available affinity/local CPU-quota capacity. Do not compare differently
+  normalized CPU percentages as if they were the same metric.
+- **PSS:** proportional resident memory, which apportions shared pages among
+  processes. **RSS:** resident memory, which double-counts shared pages when
+  summed across processes. If Linux denies PSS for any process in a group, that
+  group's PSS is unavailable; RSS remains available.
+- **Container memory:** cgroup usage and working memory (usage minus inactive
+  file cache), not the sum of process PSS/RSS. Cgroup v1 or inaccessible counters
+  return `null`, not a fabricated zero.
+- New/reused PIDs warm up for one sample before reporting CPU. Processes that
+  exit between samples and orphaned helpers may not be attributed to a component;
+  container accounting is the broader reference. Missing/stale samples are marked.
+- **Configured FPS** and the JavaScript/browser heartbeat are not measurements
+  of encoded or NVR-delivered FPS. Use an independent RTSP decoder for that test.
+
+`GET /api/diagnostics` returns schema version 1 with `latest`, `history`, and
+sanitized stream health/settings. History holds at most 60 samples (about five
+minutes) in RAM, resets when the app restarts, and is not written to disk.
+`?download=1` exports the same data. The export contains stream names and resource
+metrics but no webpage/RTSP URLs, credentials, process arguments, environment
+variables, or log contents. Treat stream names as potentially private when sharing.
+
+For long-term history and alerts, use the existing **Home Assistant Supervisor**
+integration's Web2RTSP **CPU Percent**, **Memory Percent**, and **Running** binary
+sensor. These are disabled by default; enable only the entities you want from
+Settings → Devices & services → Home Assistant Supervisor → Web2RTSP. This app
+does not auto-create duplicate sensors or change users' entity preferences.
+[Official Supervisor entity documentation](https://www.home-assistant.io/integrations/hassio/).
+Per-component HA entities can be added by a future companion integration consuming
+this API, without coupling the core streaming app to MQTT or HA credentials.
 
 ## Security model
 

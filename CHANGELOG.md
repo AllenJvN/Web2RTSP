@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 — pre-release
+
+- Added container-local diagnostics for Chromium, FFmpeg, Xvfb, MediaMTX, and the app/Playwright process tree.
+- Added a cached diagnostics API, five-minute in-memory history, UI charts, and a JSON download without URLs, credentials, command lines, or logs.
+- Distinguished one-core CPU percentages, container-capacity percentages, PSS, RSS, and cgroup memory accounting; missing data is reported as unavailable.
+- Kept configured FPS and browser heartbeats explicitly separate from measured video delivery.
+- Periodic status refresh no longer rebuilds configuration forms or erases unsaved input.
+- Diagnostics require no Docker socket, host PID access, new dependencies, or protection-mode changes.
+
 ## 0.1.1 — pre-release
 
 - Added an explicit advertised host/IP so ingress displays an NVR-reachable RTSP URL.

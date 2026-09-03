@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 from aiohttp import web
 
 from .config import load_config, masked_config, merge_masked, save_config
+from .diagnostics import Diagnostics
 from .runtime import RuntimeManager
 
 LOGGER = logging.getLogger(__name__)
@@ -89,6 +90,13 @@ async def api_status(request: web.Request) -> web.Response:
     return web.json_response(request.app["manager"].status(_advertised_host(request)))
 
 
+async def api_diagnostics(request: web.Request) -> web.Response:
+    headers = {"Cache-Control": "no-store"}
+    if request.query.get("download") == "1":
+        headers["Content-Disposition"] = 'attachment; filename="web2rtsp-diagnostics.json"'
+    return web.json_response(request.app["diagnostics"].snapshot(), headers=headers)
+
+
 async def api_restart(request: web.Request) -> web.Response:
     name = request.match_info["name"]
     try:
@@ -121,9 +129,11 @@ async def health(request: web.Request) -> web.Response:
 
 async def on_startup(app: web.Application) -> None:
     await app["manager"].start()
+    await app["diagnostics"].start()
 
 
 async def on_cleanup(app: web.Application) -> None:
+    await app["diagnostics"].stop()
     await app["manager"].stop()
 
 
@@ -135,11 +145,14 @@ def create_app(config_path: Path | None = None, runtime_dir: Path | None = None)
     app["config_path"] = config_path
     app["config"] = config
     app["manager"] = RuntimeManager(config, runtime_dir)
+    app["diagnostics"] = Diagnostics(app["manager"])
     app.router.add_get("/", index)
+    app.router.add_static("/static/", ROOT / "static", show_index=False)
     app.router.add_get("/health", health)
     app.router.add_get("/api/config", api_get_config)
     app.router.add_put("/api/config", api_save_config)
     app.router.add_get("/api/status", api_status)
+    app.router.add_get("/api/diagnostics", api_diagnostics)
     app.router.add_post("/api/streams/{name}/restart", api_restart)
     app.router.add_get("/api/streams/{name}/snapshot", api_snapshot)
     app.on_startup.append(on_startup)

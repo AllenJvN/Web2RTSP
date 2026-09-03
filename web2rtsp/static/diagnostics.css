@@ -1,0 +1,12 @@
+.diag-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.diag-head h2{margin:0}.diag-head a{color:var(--accent);font-size:12px}.diag-head .actions{margin:0}
+#diagnostics{margin-bottom:14px}.diag-content{margin-top:16px}.diag-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.diag-summary>div{background:#0e1521;border-radius:8px;padding:13px;min-width:0}
+.diag-summary strong{display:block;font-size:28px;margin:8px 0;color:var(--accent);font-variant-numeric:tabular-nums}
+.diag-summary svg{display:block;width:100%;height:42px;color:var(--accent)}.diag-summary .sub{font-size:12px}
+.diag-table-wrap{overflow-x:auto}.diag-table{border-collapse:collapse;width:100%;margin-top:18px;font-variant-numeric:tabular-nums}
+.diag-table th,.diag-table td{text-align:right;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.diag-table th{color:var(--muted);font-weight:500;font-size:12px}.diag-table th:first-child,.diag-table td:first-child{text-align:left}
+.diag-table small{display:block;color:var(--muted);margin-top:3px}.diag-note{font-size:12px;line-height:1.6}
+.diag-streams>div{padding:10px 0;border-top:1px solid var(--line)}.diag-streams .sub{font-size:12px;line-height:1.7}
+@media(max-width:650px){.diag-summary{grid-template-columns:1fr}.diag-summary svg{height:30px}.diag-table th,.diag-table td{padding:8px 5px}}
